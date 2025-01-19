@@ -41,11 +41,3 @@ contract FundTokenERC20 is ERC20 {
         _burn(msg.sender, amountToClaim);
     }
 }
-
-contract Test is FundMe {
-    constructor() FundMe(28) {}
-
-    function getA() public view returns(uint256) {
-        return lockTime;
-    }
-}

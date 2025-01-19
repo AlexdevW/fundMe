@@ -20,7 +20,7 @@ import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interf
  *    需要一个第三方的服务把线下的数据，移动到链上
  */
 contract FundMe {
-    AggregatorV3Interface internal dataFeed;
+    AggregatorV3Interface public dataFeed;
     mapping(address => uint256) public fundersToAmout;
     uint256 MINIMUM_VALUE = 1 * 10**18; // USD  （在 Solidity 中，所有金额都要用 wei 单位表示， 将金额放大到 18 位小数，确保不会丢失精度）
 
@@ -36,11 +36,9 @@ contract FundMe {
 
     bool public getFundSuccess;
 
-    constructor(uint256 _lockTime) {
+    constructor(uint256 _lockTime, address dataFeedAddr) {
         // Sepolia  测试网
-        dataFeed = AggregatorV3Interface(
-            0x694AA1769357215DE4FAC081bf1f309aDC325306
-        );
+        dataFeed = AggregatorV3Interface(dataFeedAddr);
         owner = msg.sender;
 
         deploymentTimestamp = block.timestamp;

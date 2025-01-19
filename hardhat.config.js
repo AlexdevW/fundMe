@@ -1,4 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
+require('hardhat-deploy');
 require("@chainlink/env-enc").config();
 require("./tasks");
 
@@ -21,6 +22,14 @@ module.exports = {
   etherscan: {
     apiKey: {
       sepolia: ETHERSCAN_API_KEY,
+    },
+  },
+  namedAccounts: {
+    firstAccount: {
+      default: 0,
+    },
+    secondAccount: {
+      default: 1,
     },
   },
 };
