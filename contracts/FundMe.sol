@@ -22,9 +22,9 @@ import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interf
 contract FundMe {
     AggregatorV3Interface internal dataFeed;
     mapping(address => uint256) public fundersToAmout;
-    uint256 MINIMUM_VALUE = 100 * 10**18; // USD  （在 Solidity 中，所有金额都要用 wei 单位表示， 将金额放大到 18 位小数，确保不会丢失精度）
+    uint256 MINIMUM_VALUE = 1 * 10**18; // USD  （在 Solidity 中，所有金额都要用 wei 单位表示， 将金额放大到 18 位小数，确保不会丢失精度）
 
-    uint256 constant TARGET = 1000 * 10**18; // USD
+    uint256 constant TARGET = 2 * 10**18; // USD
 
     address public owner;
 
@@ -95,7 +95,7 @@ contract FundMe {
     // 非存转账，可以执行一些逻辑， 可以调用payable 函数，把payable 函数需要的入参传进去 (以太坊官方推荐)
     // call: transfer ETH with data return value of function and bool;
 
-    function getFund() external widnowClose onlyOwner {
+    function getFund() external windowClose onlyOwner {
         require(
             convertEthToUsd(address(this).balance) >= TARGET,
             "TARGET is not reacted"
@@ -123,7 +123,7 @@ contract FundMe {
         getFundSuccess = true; // flag;
     }
 
-    function refund() external widnowClose {
+    function refund() external windowClose {
         require(
             convertEthToUsd(address(this).balance) < TARGET,
             "TARGET is reached"
@@ -159,7 +159,7 @@ contract FundMe {
 
     /************************ modifier *****************/
     //  修饰符 提取公共的 rquire 校验方法
-    modifier widnowClose() {
+    modifier windowClose() {
         // 如果 _; 放在require 上面，代表先执行函数里的逻辑，最后再执行require逻辑
         require(
             block.timestamp >= deploymentTimestamp + lockTime,
