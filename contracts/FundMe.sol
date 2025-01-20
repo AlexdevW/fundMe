@@ -21,7 +21,7 @@ import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interf
  */
 contract FundMe {
     AggregatorV3Interface public dataFeed;
-    mapping(address => uint256) public fundersToAmout;
+    mapping(address => uint256) public fundersToAmount;
     uint256 MINIMUM_VALUE = 1 * 10**18; // USD  （在 Solidity 中，所有金额都要用 wei 单位表示， 将金额放大到 18 位小数，确保不会丢失精度）
 
     uint256 constant TARGET = 2 * 10**18; // USD
@@ -35,6 +35,10 @@ contract FundMe {
     address erc20Addr;
 
     bool public getFundSuccess;
+
+    event FundWithdrawByOwner(uint256);
+
+    event RefundByFunder(address, uint256);
 
     constructor(uint256 _lockTime, address dataFeedAddr) {
         // Sepolia  测试网
@@ -51,7 +55,7 @@ contract FundMe {
             block.timestamp < deploymentTimestamp + lockTime,
             "Window is close"
         );
-        fundersToAmout[msg.sender] = msg.value;
+        fundersToAmount[msg.sender] = msg.value;
     }
 
     function getChainlinkDataFeedLatestAnswer() public view returns (int256) {
@@ -111,14 +115,17 @@ contract FundMe {
 
         // bool success = payable(msg.sender).send(address(this).balance);
         // require(success, "tx failed");
-
+        uint256 balance = address(this).balance;
         bool success;
-        (success, ) = payable(msg.sender).call{value: address(this).balance}(
+        (success, ) = payable(msg.sender).call{value: balance}(
             ""
         );
         require(success, "transfer tx failed");
-        fundersToAmout[msg.sender] = 0;
+        fundersToAmount[msg.sender] = 0;
         getFundSuccess = true; // flag;
+
+        // emit event
+        emit FundWithdrawByOwner(balance);
     }
 
     function refund() external windowClose {
@@ -127,18 +134,21 @@ contract FundMe {
             "TARGET is reached"
         );
 
-        require(fundersToAmout[msg.sender] != 0, "there is no fund for you");
+        require(fundersToAmount[msg.sender] != 0, "there is no fund for you");
         // require(
         //     block.timestamp < deploymentTimestamp + lockTime,
         //     "the window is not close"
         // );
 
+        uint256 balance = fundersToAmount[msg.sender];
         bool success;
         (success, ) = payable(msg.sender).call{
-            value: fundersToAmout[msg.sender]
+            value: balance
         }("");
         require(success, "transfer tx failed");
-        fundersToAmout[msg.sender] = 0;
+        fundersToAmount[msg.sender] = 0;
+
+        emit RefundByFunder(msg.sender, balance);
     }
 
     function setFunderToAmount(address funder, uint256 amountToUpdate)
@@ -148,7 +158,7 @@ contract FundMe {
             msg.sender == erc20Addr,
             "you do not have permission to call this"
         );
-        fundersToAmout[funder] = amountToUpdate;
+        fundersToAmount[funder] = amountToUpdate;
     }
 
     function setErc20Addr(address _erc20Addr) public onlyOwner {

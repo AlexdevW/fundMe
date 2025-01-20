@@ -37,7 +37,7 @@ task("interact-fundme", "interact with fundme contract")
     );
 
     // check mapping
-    const firstAccountBalanceInFundMe = await fundMe.fundersToAmout(
+    const firstAccountBalanceInFundMe = await fundMe.fundersToAmount(
       firstAccount.address
     );
     console.log(
@@ -46,7 +46,7 @@ task("interact-fundme", "interact with fundme contract")
       )}`
     );
 
-    const secondAccountBalanceInFundMe = await fundMe.fundersToAmout(
+    const secondAccountBalanceInFundMe = await fundMe.fundersToAmount(
       secondAccount.address
     );
     console.log(

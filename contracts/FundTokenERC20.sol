@@ -18,14 +18,14 @@ contract FundTokenERC20 is ERC20 {
 
     function mint(uint256 amountToMint) public {
         require(
-            amountToMint <= fundMe.fundersToAmout(msg.sender),
+            amountToMint <= fundMe.fundersToAmount(msg.sender),
             "You cannot mint this many tokens "
         );
         require(fundMe.getFundSuccess(), "The fundme is not completed yet"); // gatter  solidity 会默认把合约里的public数据，变成get函数，供外部调用
         _mint(msg.sender, amountToMint);
         fundMe.setFunderToAmount(
             msg.sender,
-            fundMe.fundersToAmout(msg.sender) - amountToMint
+            fundMe.fundersToAmount(msg.sender) - amountToMint
         );
     }
 

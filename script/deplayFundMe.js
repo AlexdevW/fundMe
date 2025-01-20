@@ -4,7 +4,7 @@ async function main() {
   // create factory
   const fundMeFactory = await ethers.getContractFactory("FundMe");
   console.log("contract deploying");
-  const fundMe = await fundMeFactory.deploy(300); // 发起部署请求，拉起metamask 弹窗
+  const fundMe = await fundMeFactory.deploy(300, '0x694AA1769357215DE4FAC081bf1f309aDC325306'); // 发起部署请求，拉起metamask 弹窗
   await fundMe.waitForDeployment(); // 等待用户确认，并且等待区块验证后入链
   console.log(
     `contract has been deployed successfully, contract address is ${fundMe.target}`
@@ -41,10 +41,10 @@ async function main() {
   console.log(`Balance of the contract after second fund is ${ethers.formatEther(balanceOfContractAfterSecondFund)}`);
 
   // check mapping
-  const firstAccountBalanceInFundMe = await fundMe.fundersToAmout(firstAccount.address);
+  const firstAccountBalanceInFundMe = await fundMe.fundersToAmount(firstAccount.address);
   console.log(`first account balance in fund me is ${ethers.formatEther(firstAccountBalanceInFundMe)}`);
 
-  const secondAccountBalanceInFundMe = await fundMe.fundersToAmout(secondAccount.address);
+  const secondAccountBalanceInFundMe = await fundMe.fundersToAmount(secondAccount.address);
   console.log(`second account balance in fund me is ${ethers.formatEther(secondAccountBalanceInFundMe)}`);
 }
 
